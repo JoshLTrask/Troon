@@ -1,13 +1,13 @@
 class Main:
 
-def setup:
-    print ("in setup")
+    def setup:
+        print ("in setup")
 
-def main_loop:
-    print("in main loop")
+    def main_loop:
+        print("in main loop")
 
-def sound_effect:
-    print("in sound effect")
+    def sound_effect:
+        print("in sound effect")
 
     
 class Player: 
