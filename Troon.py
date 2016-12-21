@@ -1,6 +1,9 @@
-import pygame, sys, os
+import pygame, sys, os, copy, time
 from pygame.locals import *
 import pygame as py
+
+
+
 
 #Trask & Heinz
 class Main:
@@ -11,8 +14,8 @@ class Main:
         self.setup()
         self.sound_effect()
 
-        self.p1 = Player([100,100],2,(255,150,0),self.DISPLAY)
-        self.p2 = Player([700,300],0,(0,100,255),self.DISPLAY)
+        self.p1 = p1
+        self.p2 = p2
 
 
         self.main_loop()
@@ -26,12 +29,11 @@ class Main:
 
         pygame.init()
 
-        self.DISPLAY = pygame.display.set_mode((800,600),0,32)
+        self.DISPLAY = DISPLAY
 
 
         self.board = GameBoard()
-        self.board.draw
-        #pygame.draw.rect(self.DISPLAY,self.blue,(200,150,100,50))
+        self.board.draw(self.DISPLAY)
         self.clock = pygame.time.Clock()
 
 
@@ -119,12 +121,17 @@ class Main:
             pygame.mixer.music.load(music)
             pygame.mixer.music.play(-1)
 
+
+
+
+
 #Class by Couper and Trask
 class Player:
     def __init__(self,position,direction,colour,dis) :
         print('initialize player')
         self.lives = 3
         self.pos = position
+        self.ogpos = copy.deepcopy(self.pos)
         self.dir = direction
         self.col = colour
         self.paths = []
@@ -168,7 +175,35 @@ class Player:
     def check_collision(self):
         print("in check collision")
 
-        if self.pos[0] <= 10:
+        if self.pos[0] <= 7:
+            self.kill()
+            self.start_again()
+        if self.pos[1] <= 7:
+            self.kill()
+            self.start_again()
+        if self.pos[0] >= (800 - 18):
+            self.pos[0] = (800 - 18)
+        if self.pos[1] >= 489:
+            self.pos[1] = 489
+
+    def make_path(self):
+          print("in make path")
+
+
+    #method by Couper and Braiden
+    def kill(self):
+        print('kill player')
+        self.lives -= 1
+        p1.pos = copy.deepcopy(p1.ogpos)
+        p1.dir = 2
+        p2.pos = copy.deepcopy(p2.ogpos)
+        p2.dir = 0
+
+
+
+    def start_again(self):
+        time.sleep(1)
+
 
 
         if self.pos[1] <= 10:
@@ -179,12 +214,8 @@ class Player:
         if self.pos[1] >= 489:
             self.pos[1] = 489
 
-    def make_path(self):
-          print("in make path")
-    #method by Couper and Braiden
-    def kill(self):
-        print('kill player')
-        
+
+
 
 #Jakob's code
 class GameBoard:
@@ -209,25 +240,21 @@ class GameBoard:
 
         # hearts image
         # load player 1 hearts
-        player_1_heart_1 = pygame.image.load('heart.png')
-        player_1_heart_2 = pygame.image.load('heart.png')
-        player_1_heart_3 = pygame.image.load('heart.png')
+        player_1_heart = pygame.image.load('heart.png')
+
 
         # display player 2 hearts
-        window.blit(player_1_heart_1, (20, 575))
-        window.blit(player_1_heart_2, (70, 575))
-        window.blit(player_1_heart_3, (120, 575))
+        for i in range(p1.lives):
+            window.blit(player_1_heart, (i*50 + 20, 575))
 
 
         # load player 2 hearts
-        player_2_heart_1 = pygame.image.load('heart.png')
-        player_2_heart_2 = pygame.image.load('heart.png')
-        player_2_heart_3= pygame.image.load('heart.png')
+        player_2_heart = pygame.image.load('heart.png')
+
 
         # display player 2 hearts
-        window.blit(player_2_heart_1, (400, 575))
-        window.blit(player_2_heart_2, (450, 575))
-        window.blit(player_2_heart_3, (500, 575))
+        for j in range(p2.lives):
+            window.blit(player_2_heart, (j * 50 + 400, 575))
 
         # load font
         myfont = pygame.font.SysFont("arial bold", 30)
@@ -252,7 +279,10 @@ class Path:
     def makepath(self):
       print("in make path")
 
+DISPLAY = pygame.display.set_mode((800,600),0,32)
+p1 = Player([100,100],2,(255,150,0),DISPLAY)
+p2 = Player([700,300],0,(0,100,255),DISPLAY)
+
 
 if __name__ == '__main__': run = Main()
-
 
