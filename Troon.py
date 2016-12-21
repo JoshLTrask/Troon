@@ -2,6 +2,7 @@ import pygame, sys, os
 from pygame.locals import *
 import pygame as py
 
+#Trask & Heinz
 class Main:
 
     def __init__(self):
@@ -111,14 +112,14 @@ class Main:
 
 
 
-
+        #method done by Jakob H.
     def sound_effect(self):
         if pygame.mixer:
             music = os.path.join(self.main_dir, 'Music.wav')
             pygame.mixer.music.load(music)
             pygame.mixer.music.play(-1)
 
-
+#Class by Couper and Trask
 class Player:
     def __init__(self,position,direction,colour,dis) :
         print('initialize player')
@@ -180,7 +181,7 @@ class Player:
 
     def make_path(self):
           print("in make path")
-
+    #method by Couper and Braiden
     def kill(self):
         print('kill player')
         
