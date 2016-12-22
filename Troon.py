@@ -2,6 +2,10 @@ import pygame, sys, os, copy, time
 from pygame.locals import *
 import pygame as py
 
+
+
+
+#Trask & Heinz
 class Main:
 
     def __init__(self):
@@ -10,8 +14,8 @@ class Main:
         self.setup()
         self.sound_effect()
 
-        self.p1 = Player([100,100],2,(255,150,0),self.DISPLAY)
-        self.p2 = Player([700,300],0,(0,100,255),self.DISPLAY)
+        self.p1 = p1
+        self.p2 = p2
 
 
         self.main_loop()
@@ -25,12 +29,11 @@ class Main:
 
         pygame.init()
 
-        self.DISPLAY = pygame.display.set_mode((800,600),0,32)
+        self.DISPLAY = DISPLAY
 
 
         self.board = GameBoard()
         self.board.draw(self.DISPLAY)
-
         self.clock = pygame.time.Clock()
 
 
@@ -44,7 +47,7 @@ class Main:
             self.clock.tick(1000/30)
 
             pygame.display.update()
-            #self.board.draw(self.DISPLAY)
+            self.board.draw(self.DISPLAY)
             for event in pygame.event.get():
                 if event.type==QUIT:
                     pygame.quit()
@@ -57,29 +60,29 @@ class Main:
 
         Key = pygame.key.get_pressed()
 
-        if Key[pygame.K_UP] and self.p1.dir != 2:
+        if Key[pygame.K_UP] :
             self.p1.dir = 0
 
-        if Key[pygame.K_RIGHT] and self.p1.dir != 3:
+        if Key[pygame.K_RIGHT]:
             self.p1.dir = 1
 
-        if Key[pygame.K_LEFT] and self.p1.dir != 1:
+        if Key[pygame.K_LEFT]:
             self.p1.dir = 3
 
-        if Key[pygame.K_DOWN] and self.p1.dir != 0:
+        if Key[pygame.K_DOWN]:
             self.p1.dir = 2
 
         #p2 move
-        if Key[pygame.K_w] and self.p2.dir != 2:
+        if Key[pygame.K_w]:
             self.p2.dir = 0
 
-        if Key[pygame.K_d] and self.p2.dir != 3:
+        if Key[pygame.K_d]:
             self.p2.dir = 1
 
-        if Key[pygame.K_a] and self.p2.dir != 1:
+        if Key[pygame.K_a]:
             self.p2.dir = 3
 
-        if Key[pygame.K_s] and self.p2.dir != 0:
+        if Key[pygame.K_s]:
             self.p2.dir = 2
 
         #move p1
@@ -111,7 +114,7 @@ class Main:
 
 
 
-
+        #method done by Jakob H.
     def sound_effect(self):
         if pygame.mixer:
             music = os.path.join(self.main_dir, 'Music.wav')
@@ -119,17 +122,18 @@ class Main:
             pygame.mixer.music.play(-1)
 
 
+
+
+
+#Class by Couper and Trask
 class Player:
     def __init__(self,position,direction,colour,dis) :
         print('initialize player')
         self.lives = 3
         self.pos = position
-        self.lastpos = []
-        self.pathnum = 0
+        self.ogpos = copy.deepcopy(self.pos)
         self.dir = direction
-        self.olddir = copy.deepcopy(self.dir)
         self.col = colour
-        self.counter = 0
         self.paths = []
 
         self.DISPLAY = dis
@@ -137,14 +141,11 @@ class Player:
     def update(self):
         #print("in update")
 
-        #paths
-        if len(self.lastpos) != 0:
-            self.paths.append(self.lastpos)
-        self.lastpos = copy.deepcopy(self.pos)
+
+        #move player
+
 
         self.check_collision()
-        self.olddir = copy.deepcopy(self.dir)
-
         self.draw()
 
     def draw(self):
@@ -155,27 +156,55 @@ class Player:
 
 
     def go_left(self):
-        #print("in go left")
+        print("in go left")
         self.pos[0] -= 3
 
     def go_right(self):
-        #print("in go right")
+        print("in go right")
         self.pos[0] += 3
 
     def go_up(self):
-        #print("in go up")
+        print("in go up")
         self.pos[1] -= 3
 
     def go_down(self):
-       # print("in go down")
+        print("in go down")
         self.pos[1] += 3
 
 
     def check_collision(self):
-       # print("in check collision")
+        print("in check collision")
 
-        if self.pos[0] <= 10:
-            self.pos[0] = 10
+        if self.pos[0] <= 7:
+            self.kill()
+            self.start_again()
+        if self.pos[1] <= 7:
+            self.kill()
+            self.start_again()
+        if self.pos[0] >= (800 - 18):
+            self.pos[0] = (800 - 18)
+        if self.pos[1] >= 489:
+            self.pos[1] = 489
+
+    def make_path(self):
+          print("in make path")
+
+
+    #method by Couper and Braiden
+    def kill(self):
+        print('kill player')
+        self.lives -= 1
+        p1.pos = copy.deepcopy(p1.ogpos)
+        p1.dir = 2
+        p2.pos = copy.deepcopy(p2.ogpos)
+        p2.dir = 0
+
+
+
+    def start_again(self):
+        time.sleep(1)
+
+
 
         if self.pos[1] <= 10:
             self.pos[1] = 10
@@ -185,22 +214,7 @@ class Player:
         if self.pos[1] >= 489:
             self.pos[1] = 489
 
-        #path collision
 
-        for i in range(len(self.paths)):
-           for x in range(8):
-               for y in range(8):
-                   if self.pos[0] + x == self.paths[i][0]+ x and self.pos[1] + y == self.paths[i][1] + y:
-                       self.kill()
-                       sys.exit()
-
-
-
-
-
-    def kill(self):
-        print('kill player')
-        time.sleep(1)
 
 
 #Jakob's code
@@ -226,25 +240,21 @@ class GameBoard:
 
         # hearts image
         # load player 1 hearts
-        player_1_heart_1 = pygame.image.load('heart.png')
-        player_1_heart_2 = pygame.image.load('heart.png')
-        player_1_heart_3 = pygame.image.load('heart.png')
+        player_1_heart = pygame.image.load('heart.png')
+
 
         # display player 2 hearts
-        window.blit(player_1_heart_1, (20, 575))
-        window.blit(player_1_heart_2, (70, 575))
-        window.blit(player_1_heart_3, (120, 575))
+        for i in range(p1.lives):
+            window.blit(player_1_heart, (i*50 + 20, 575))
 
 
         # load player 2 hearts
-        player_2_heart_1 = pygame.image.load('heart.png')
-        player_2_heart_2 = pygame.image.load('heart.png')
-        player_2_heart_3= pygame.image.load('heart.png')
+        player_2_heart = pygame.image.load('heart.png')
+
 
         # display player 2 hearts
-        window.blit(player_2_heart_1, (400, 575))
-        window.blit(player_2_heart_2, (450, 575))
-        window.blit(player_2_heart_3, (500, 575))
+        for j in range(p2.lives):
+            window.blit(player_2_heart, (j * 50 + 400, 575))
 
         # load font
         myfont = pygame.font.SysFont("arial bold", 30)
@@ -262,15 +272,16 @@ class GameBoard:
         window.blit(player2, (400, 510))
 
 class Path:
-    def __init__(self, VorH):
-        print('NNJGHJDFYRDUIJGFHJTUJTYDTRSE')
-        self.VorH = VorH
 
+    def draw(self):
+      print("in draw")
 
     def makepath(self):
-        print("in make path")
+      print("in make path")
+
+DISPLAY = pygame.display.set_mode((800,600),0,32)
+p1 = Player([100,100],2,(255,150,0),DISPLAY)
+p2 = Player([700,300],0,(0,100,255),DISPLAY)
 
 
 if __name__ == '__main__': run = Main()
-
-
